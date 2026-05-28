@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://zhyfhy.cn/sitemap.xml
+Sitemap: https://cheems908.github.io/sitemap.xml
