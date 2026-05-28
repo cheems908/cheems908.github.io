@@ -3,7 +3,6 @@ cv:
   headline: Scientist
   email: einstein@example.com
   location: Princeton, NJ
-  photo: ""
 
   social_networks:
     - network: X
