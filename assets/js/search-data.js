@@ -72,7 +72,18 @@ ninja.data = [{
               handler: () => {
                 window.location.href = "/blog/";
               },
-            },{id: "post-a-post-with-plotly-js",
+            },{id: "post-概率论与数理统计-第4章-随机变量的数字特征",
+        
+          title: "概率论与数理统计 第4章 随机变量的数字特征",
+        
+        description: "概率论与数理统计第4章学习笔记，涵盖期望、方差、常见分布的数字特征、切比雪夫不等式、协方差与相关系数、矩与协方差矩阵等内容。",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/probability-chapter4-numerical-characteristics/";
+          
+        },
+      },{id: "post-a-post-with-plotly-js",
         
           title: "a post with plotly.js",
         
