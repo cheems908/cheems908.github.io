@@ -12,6 +12,7 @@ toc:
 ## 章节概览
 
 本章主要介绍随机变量的各种数字特征（Numerical Characteristics），包括：
+
 - **4.1 随机变量的期望** (Expectation of a Random Variable)
 - **4.2 方差** (Variance)
 - **4.3 常见分布的数字特征** (Characteristics of Common Distributions)
@@ -322,6 +323,7 @@ $$
 **备注 4.3.1** (Remark 4.3.1)
 
 特别地，当 $$\alpha = \frac{n}{2}$$，$$\beta = 2$$ 时，Gamma分布退化为自由度为 $$n$$ 的 **卡方分布**（Chi-squared Distribution）$$\chi^2(n)$$：
+
 - 若 $$X \sim \chi^2(n)$$，则 $$E(X) = n$$，$$\text{Var}(X) = 2n$$
 
 ---
@@ -434,6 +436,7 @@ $$\rho_{X,Y}$$ 是无量纲的（free of units）。
    - 当 $$b < 0$$ 时，$$\rho_{X,Y} = -1$$
 
 **解释**：
+
 - 相关系数接近 1 表示 $$X$$ 和 $$Y$$ 通常同时取大值或小值
 - 相关系数接近 -1 表示 $$X$$ 取大值时 $$Y$$ 取小值（反之亦然）
 
@@ -479,6 +482,7 @@ $$\rho_{X,Y}$$ 是无量纲的（free of units）。
 - $$E\{[X - E(X)]^k [Y - E(Y)]^l\}$$（$$k, l = 1, 2, \cdots$$）若存在，称为 $$X$$ 和 $$Y$$ 的 **$$k+l$$ 阶混合中心矩**（Mixed Central Moment of Order $$k+l$$）
 
 **重要说明**：
+
 - 均值 $$E(X)$$ 是 $$X$$ 的一阶原点矩
 - 方差 $$\text{Var}(X)$$ 是 $$X$$ 的二阶中心矩
 - 协方差 $$\text{Cov}(X, Y)$$ 是 $$X$$ 和 $$Y$$ 的二元二阶混合中心矩
@@ -569,40 +573,40 @@ $$
 
 ## 关键术语中英对照表
 
-| 中文 | 英文 |
-|------|------|
-| 期望/均值 | Expectation/Mean/Expected Value |
-| 方差 | Variance |
-| 标准差 | Standard Deviation |
-| 概率分布律 | Probability Function (PF) |
-| 概率密度函数 | Probability Density Function (PDF) |
-| 累积分布函数 | Cumulative Distribution Function (CDF) |
-| 伯努利分布 | Bernoulli Distribution |
-| 二项分布 | Binomial Distribution |
-| 泊松分布 | Poisson Distribution |
-| 超几何分布 | Hypergeometric Distribution |
-| 负二项分布 | Negative Binomial Distribution |
-| 均匀分布 | Uniform Distribution |
-| 指数分布 | Exponential Distribution |
-| 正态分布/高斯分布 | Normal/Gaussian Distribution |
-| Gamma分布 | Gamma Distribution |
-| 卡方分布 | Chi-squared Distribution |
-| 切比雪夫不等式 | Chebyshev's Inequality |
-| 协方差 | Covariance |
-| 相关系数 | Correlation Coefficient |
-| 正相关 | Positive Correlated |
-| 负相关 | Negative Correlated |
-| 不相关 | Uncorrelated |
-| 独立 | Independent |
-| 矩 | Moment |
-| 原点矩 | Moment about the Origin |
-| 中心矩 | Central Moment |
-| 混合矩 | Mixed Moment |
-| 协方差矩阵 | Covariance Matrix |
-| 对称矩阵 | Symmetric Matrix |
-| 退化/非退化 | Degenerate/Non-degenerate |
-| 标准化变量 | Standardized Variables |
-| 二元正态分布 | Bivariate Normal Distribution |
-| $$n$$ 维正态分布 | $$n$$-dimensional Normal Distribution |
-| 线性变换 | Linear Transformation |
-| 独立同分布 | Independent and Identically Distributed (IID) |
+| 中文              | 英文                                          |
+| ----------------- | --------------------------------------------- |
+| 期望/均值         | Expectation/Mean/Expected Value               |
+| 方差              | Variance                                      |
+| 标准差            | Standard Deviation                            |
+| 概率分布律        | Probability Function (PF)                     |
+| 概率密度函数      | Probability Density Function (PDF)            |
+| 累积分布函数      | Cumulative Distribution Function (CDF)        |
+| 伯努利分布        | Bernoulli Distribution                        |
+| 二项分布          | Binomial Distribution                         |
+| 泊松分布          | Poisson Distribution                          |
+| 超几何分布        | Hypergeometric Distribution                   |
+| 负二项分布        | Negative Binomial Distribution                |
+| 均匀分布          | Uniform Distribution                          |
+| 指数分布          | Exponential Distribution                      |
+| 正态分布/高斯分布 | Normal/Gaussian Distribution                  |
+| Gamma分布         | Gamma Distribution                            |
+| 卡方分布          | Chi-squared Distribution                      |
+| 切比雪夫不等式    | Chebyshev's Inequality                        |
+| 协方差            | Covariance                                    |
+| 相关系数          | Correlation Coefficient                       |
+| 正相关            | Positive Correlated                           |
+| 负相关            | Negative Correlated                           |
+| 不相关            | Uncorrelated                                  |
+| 独立              | Independent                                   |
+| 矩                | Moment                                        |
+| 原点矩            | Moment about the Origin                       |
+| 中心矩            | Central Moment                                |
+| 混合矩            | Mixed Moment                                  |
+| 协方差矩阵        | Covariance Matrix                             |
+| 对称矩阵          | Symmetric Matrix                              |
+| 退化/非退化       | Degenerate/Non-degenerate                     |
+| 标准化变量        | Standardized Variables                        |
+| 二元正态分布      | Bivariate Normal Distribution                 |
+| $$n$$ 维正态分布  | $$n$$-dimensional Normal Distribution         |
+| 线性变换          | Linear Transformation                         |
+| 独立同分布        | Independent and Identically Distributed (IID) |
