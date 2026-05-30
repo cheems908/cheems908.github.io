@@ -72,7 +72,18 @@ ninja.data = [{
               handler: () => {
                 window.location.href = "/blog/";
               },
-            },{id: "post-概率论与数理统计-第4章-随机变量的数字特征",
+            },{id: "post-通过云服务器配置frp反向代理到本地机器指南-以阿里云为例",
+        
+          title: "通过云服务器配置FRP反向代理到本地机器指南（以阿里云为例）",
+        
+        description: "详细介绍如何使用FRP（Fast Reverse Proxy）通过阿里云ECS服务器实现内网穿透，将本地服务暴露到互联网。",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/frp-reverse-proxy-aliyun-guide/";
+          
+        },
+      },{id: "post-概率论与数理统计-第4章-随机变量的数字特征",
         
           title: "概率论与数理统计 第4章 随机变量的数字特征",
         

@@ -1,0 +1,173 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title> 通过云服务器配置FRP反向代理到本地机器指南（以阿里云为例） | Cheems908 </title> <meta name="author" content="Z Y H"> <meta name="description" content="详细介绍如何使用FRP（Fast Reverse Proxy）通过阿里云ECS服务器实现内网穿透，将本地服务暴露到互联网。"> <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; media-src 'self' https:; frame-src 'self' https:; connect-src 'self' https:;"> <link rel="stylesheet" href="/assets/css/bootstrap.min.css?v=a4b3f509e79c54a512b890d73235ef04"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="/assets/css/academicons.min.css?v=f0b7046b84e425c55f3463ac249818f5"> <link defer rel="stylesheet" href="/assets/css/scholar-icons.css?v=62b2ac103a88034e6882a5be5f3e2772"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&amp;display=swap"> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?v=591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="/assets/img/daodun.jpg?v=a2b81a8665b9991e3d3b31770facc4f4"> <link rel="stylesheet" href="/assets/css/main.css?v=d41d8cd98f00b204e9800998ecf8427e"> <link rel="canonical" href="https://cheems908.github.io/blog/2026/frp-reverse-proxy-aliyun-guide/"> <script src="/assets/js/theme.js?v=5fea5159b787642c1bbc1f334d60f883"></script> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?v=5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>
+    initTheme();
+  </script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> Cheems908 </a> <button class="navbar-toggler collapsed ml-auto" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse text-right" id="navbarNav"> <ul class="navbar-nav ml-auto flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog </a> </li> <li class="nav-item "> <a class="nav-link" href="/publications/">publications </a> </li> <li class="nav-item "> <a class="nav-link" href="/projects/">projects </a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">repositories </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV </a> </li> <li class="nav-item "> <a class="nav-link" href="/teaching/">teaching </a> </li> <li class="nav-item "> <a class="nav-link" href="/people/">people </a> </li> <li class="nav-item dropdown "> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">submenus </a> <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown"> <a class="dropdown-item " href="/books/">bookshelf</a> <div class="dropdown-divider"></div> <a class="dropdown-item " href="/blog/">blog</a> </div> </li> <li class="nav-item"> <button id="search-toggle" title="Search" onclick="openSearchModal()"> <span class="nav-link">ctrl k <i class="fa-solid fa-magnifying-glass"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" title="Change theme"> <i class="fa-half-sun-moon" id="light-toggle-system"></i> <i class="fa-solid fa-moon" id="light-toggle-dark"></i> <i class="fa-solid fa-sun" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <div class="post"> <header class="post-header"> <h1 class="post-title">通过云服务器配置FRP反向代理到本地机器指南（以阿里云为例）</h1> <p class="post-meta"> Created on May 30, 2026 </p> <p class="post-tags"> <a href="/blog/2026"> <i class="fa-solid fa-calendar fa-sm"></i> 2026 </a>   ·   <a href="/blog/tag/frp"> <i class="fa-solid fa-hashtag fa-sm"></i> frp</a>   <a href="/blog/tag/reverse-proxy"> <i class="fa-solid fa-hashtag fa-sm"></i> reverse-proxy</a>   <a href="/blog/tag/networking"> <i class="fa-solid fa-hashtag fa-sm"></i> networking</a>   <a href="/blog/tag/aliyun"> <i class="fa-solid fa-hashtag fa-sm"></i> aliyun</a>   <a href="/blog/tag/tutorial"> <i class="fa-solid fa-hashtag fa-sm"></i> tutorial</a>   ·   <a href="/blog/category/tutorials"> <i class="fa-solid fa-tag fa-sm"></i> tutorials</a> </p> </header> <article class="post-content"> <div id="table-of-contents"> <ul id="toc" class="section-nav"> <li class="toc-entry toc-h2"> <a href="#%E4%B8%80%E6%A6%82%E8%BF%B0">一、概述</a> <ul> <li class="toc-entry toc-h3"><a href="#%E4%BB%80%E4%B9%88%E6%98%AFfrp">什么是FRP？</a></li> <li class="toc-entry toc-h3"><a href="#%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86">工作原理</a></li> </ul> </li> <li class="toc-entry toc-h2"> <a href="#%E4%BA%8C%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C">二、准备工作</a> <ul> <li class="toc-entry toc-h3"><a href="#1-%E9%98%BF%E9%87%8C%E4%BA%91ecs%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%B4%AD%E4%B9%B0">1. 阿里云ECS服务器购买</a></li> <li class="toc-entry toc-h3"><a href="#2-%E5%AE%89%E5%85%A8%E7%BB%84%E9%85%8D%E7%BD%AE">2. 安全组配置</a></li> </ul> </li> <li class="toc-entry toc-h2"> <a href="#%E4%B8%89%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AB%AF%E9%85%8D%E7%BD%AE%E9%98%BF%E9%87%8C%E4%BA%91ecs">三、服务器端配置（阿里云ECS）</a> <ul> <li class="toc-entry toc-h3"><a href="#1-%E8%BF%9E%E6%8E%A5%E6%9C%8D%E5%8A%A1%E5%99%A8">1. 连接服务器</a></li> <li class="toc-entry toc-h3"><a href="#2-%E4%B8%8B%E8%BD%BDfrp">2. 下载FRP</a></li> <li class="toc-entry toc-h3"><a href="#3-%E9%85%8D%E7%BD%AE%E6%9C%8D%E5%8A%A1%E7%AB%AFfrps">3. 配置服务端（frps）</a></li> <li class="toc-entry toc-h3"><a href="#4-%E8%AE%BE%E7%BD%AE%E7%B3%BB%E7%BB%9F%E6%9C%8D%E5%8A%A1">4. 设置系统服务</a></li> <li class="toc-entry toc-h3"><a href="#5-%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1">5. 启动服务</a></li> <li class="toc-entry toc-h3"><a href="#6-%E9%AA%8C%E8%AF%81%E6%9C%8D%E5%8A%A1">6. 验证服务</a></li> </ul> </li> <li class="toc-entry toc-h2"> <a href="#%E5%9B%9B%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%85%8D%E7%BD%AE%E6%9C%AC%E5%9C%B0%E6%9C%BA%E5%99%A8">四、客户端配置（本地机器）</a> <ul> <li class="toc-entry toc-h3"><a href="#1-%E4%B8%8B%E8%BD%BDfrp">1. 下载FRP</a></li> <li class="toc-entry toc-h3"><a href="#2-%E9%85%8D%E7%BD%AE%E5%AE%A2%E6%88%B7%E7%AB%AFfrpc">2. 配置客户端（frpc）</a></li> <li class="toc-entry toc-h3"><a href="#3-%E5%90%AF%E5%8A%A8%E5%AE%A2%E6%88%B7%E7%AB%AF">3. 启动客户端</a></li> </ul> </li> <li class="toc-entry toc-h2"> <a href="#%E4%BA%94%E6%B5%8B%E8%AF%95%E8%BF%9E%E6%8E%A5">五、测试连接</a> <ul> <li class="toc-entry toc-h3"><a href="#1-%E6%B5%8B%E8%AF%95web%E6%9C%8D%E5%8A%A1%E6%98%A0%E5%B0%84">1. 测试Web服务映射</a></li> <li class="toc-entry toc-h3"><a href="#2-%E6%B5%8B%E8%AF%95ssh%E8%BF%9E%E6%8E%A5">2. 测试SSH连接</a></li> <li class="toc-entry toc-h3"><a href="#3-%E6%B5%8B%E8%AF%95%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2">3. 测试远程桌面</a></li> </ul> </li> <li class="toc-entry toc-h2"> <a href="#%E5%85%AD%E9%AB%98%E7%BA%A7%E9%85%8D%E7%BD%AE">六、高级配置</a> <ul> <li class="toc-entry toc-h3"><a href="#1-%E5%9F%9F%E5%90%8D%E8%AE%BF%E9%97%AE%E5%8F%AF%E9%80%89">1. 域名访问（可选）</a></li> <li class="toc-entry toc-h3"><a href="#2-%E9%85%8D%E7%BD%AE%E5%A4%9A%E4%B8%AA%E6%9C%8D%E5%8A%A1">2. 配置多个服务</a></li> <li class="toc-entry toc-h3"><a href="#3-%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA">3. 安全加固</a></li> </ul> </li> <li class="toc-entry toc-h2"> <a href="#%E4%B8%83%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3">七、常见问题解决</a> <ul> <li class="toc-entry toc-h3"><a href="#1-%E8%BF%9E%E6%8E%A5%E5%A4%B1%E8%B4%A5">1. 连接失败</a></li> <li class="toc-entry toc-h3"><a href="#2-%E7%AB%AF%E5%8F%A3%E8%A2%AB%E5%8D%A0%E7%94%A8">2. 端口被占用</a></li> <li class="toc-entry toc-h3"><a href="#3-%E6%9C%8D%E5%8A%A1%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8">3. 服务无法启动</a></li> <li class="toc-entry toc-h3"><a href="#4-%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96">4. 性能优化</a></li> </ul> </li> <li class="toc-entry toc-h2"><a href="#%E5%85%AB%E5%AE%89%E5%85%A8%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9">八、安全注意事项</a></li> <li class="toc-entry toc-h2"> <a href="#%E4%B9%9D%E7%BB%B4%E6%8A%A4%E7%AE%A1%E7%90%86">九、维护管理</a> <ul> <li class="toc-entry toc-h3"><a href="#1-%E6%9B%B4%E6%96%B0frp">1. 更新FRP</a></li> <li class="toc-entry toc-h3"><a href="#2-%E6%97%A5%E5%BF%97%E7%AE%A1%E7%90%86">2. 日志管理</a></li> </ul> </li> <li class="toc-entry toc-h2"><a href="#%E5%8D%81%E5%8F%82%E8%80%83%E8%B5%84%E6%BA%90">十、参考资源</a></li> </ul> </div> <hr> <div id="markdown-content"> <h2 id="一概述">一、概述</h2> <h3 id="什么是frp">什么是FRP？</h3> <p>FRP（Fast Reverse Proxy）是一款开源的高性能反向代理工具，主要用于内网穿透。它可以将内网中的服务（如Web服务器、SSH、远程桌面等）通过具有公网IP的云服务器暴露到互联网，实现从外部访问内网服务的目的。</p> <h3 id="工作原理">工作原理</h3> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[本地内网机器] --&gt; [FRP客户端] --&gt; [阿里云ECS服务器] --&gt; [互联网用户]
+       ↑                    ↑                    ↑
+   运行本地服务         连接服务器         运行FRP服务端
+</code></pre></div></div> <h2 id="二准备工作">二、准备工作</h2> <h3 id="1-阿里云ecs服务器购买">1. 阿里云ECS服务器购买</h3> <ul> <li>登录<a href="https://ecs.console.aliyun.com/" rel="external nofollow noopener" target="_blank">阿里云控制台</a> </li> <li>选择ECS实例规格（推荐1核1G或以上）</li> <li>选择操作系统（推荐Ubuntu 20.04/22.04或CentOS 7/8）</li> <li>配置网络和安全组</li> <li>获取公网IP地址</li> </ul> <h3 id="2-安全组配置">2. 安全组配置</h3> <p>在阿里云控制台配置安全组，开放以下端口：</p> <table> <thead> <tr> <th>端口</th> <th>用途</th> </tr> </thead> <tbody> <tr> <td><strong>22</strong></td> <td>SSH端口，用于服务器管理</td> </tr> <tr> <td><strong>7000</strong></td> <td>FRP服务端口（默认），用于客户端连接</td> </tr> <tr> <td><strong>7500</strong></td> <td>FRP管理端口（可选），用于Web管理界面</td> </tr> <tr> <td><strong>8000-9000</strong></td> <td>代理端口范围，根据需要开放</td> </tr> </tbody> </table> <p><strong>操作步骤</strong>：</p> <ol> <li>进入ECS实例详情页</li> <li>点击”安全组” -&gt; “配置规则”</li> <li>添加入方向规则： <ul> <li>协议：TCP</li> <li>端口范围：7000/7000</li> <li>授权对象：0.0.0.0/0</li> <li>描述：FRP服务端口</li> </ul> </li> </ol> <h2 id="三服务器端配置阿里云ecs">三、服务器端配置（阿里云ECS）</h2> <h3 id="1-连接服务器">1. 连接服务器</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh root@你的阿里云公网IP
+</code></pre></div></div> <h3 id="2-下载frp">2. 下载FRP</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建目录</span>
+<span class="nb">mkdir</span> <span class="nt">-p</span> /opt/frp <span class="o">&amp;&amp;</span> <span class="nb">cd</span> /opt/frp
+
+<span class="c"># 下载最新版本（以0.68.0为例，请根据实际情况调整）</span>
+wget https://github.com/fatedier/frp/releases/download/v0.68.0/frp_0.68.0_linux_amd64.tar.gz
+
+<span class="c"># 解压</span>
+<span class="nb">tar</span> <span class="nt">-xzf</span> frp_0.68.0_linux_amd64.tar.gz
+<span class="nb">cd </span>frp_0.68.0_linux_amd64
+</code></pre></div></div> <h3 id="3-配置服务端frps">3. 配置服务端（frps）</h3> <p>创建配置文件 <code class="language-plaintext highlighter-rouge">frps.toml</code>：</p> <div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># frps.toml</span>
+<span class="n">bindPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">7000</span>
+<span class="n">auth</span><span class="p">.</span><span class="n">method</span> <span class="o">=</span><span class="w"> </span><span class="s">"token"</span>
+<span class="n">auth</span><span class="p">.</span><span class="n">token</span> <span class="o">=</span><span class="w"> </span><span class="s">"your_strong_password_here"</span>  <span class="c"># 请替换为强密码</span>
+
+<span class="c"># 可选：Web管理界面</span>
+<span class="n">webServer</span><span class="p">.</span><span class="n">addr</span> <span class="o">=</span><span class="w"> </span><span class="s">"0.0.0.0"</span>
+<span class="n">webServer</span><span class="p">.</span><span class="n">port</span> <span class="o">=</span><span class="w"> </span><span class="mi">7500</span>
+<span class="n">webServer</span><span class="p">.</span><span class="n">user</span> <span class="o">=</span><span class="w"> </span><span class="s">"admin"</span>
+<span class="n">webServer</span><span class="p">.</span><span class="n">password</span> <span class="o">=</span><span class="w"> </span><span class="s">"admin_password"</span>  <span class="c"># 请替换为强密码</span>
+
+<span class="c"># 日志配置</span>
+<span class="n">log</span><span class="p">.</span><span class="n">to</span> <span class="o">=</span><span class="w"> </span><span class="s">"/var/log/frps.log"</span>
+<span class="n">log</span><span class="p">.</span><span class="n">level</span> <span class="o">=</span><span class="w"> </span><span class="s">"info"</span>
+<span class="n">log</span><span class="p">.</span><span class="n">maxDays</span> <span class="o">=</span><span class="w"> </span><span class="mi">7</span>
+</code></pre></div></div> <h3 id="4-设置系统服务">4. 设置系统服务</h3> <p>创建systemd服务文件：</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat</span> <span class="o">&gt;</span> /etc/systemd/system/frps.service <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
+[Unit]
+Description=FRP Server Service
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+Restart=on-failure
+RestartSec=5s
+ExecStart=/opt/frp/frp_0.68.0_linux_amd64/frps -c /opt/frp/frp_0.68.0_linux_amd64/frps.toml
+LimitNOFILE=1048576
+
+[Install]
+WantedBy=multi-user.target
+</span><span class="no">EOF
+</span></code></pre></div></div> <h3 id="5-启动服务">5. 启动服务</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 重新加载systemd配置</span>
+systemctl daemon-reload
+
+<span class="c"># 启动FRP服务端</span>
+systemctl start frps
+
+<span class="c"># 设置开机自启</span>
+systemctl <span class="nb">enable </span>frps
+
+<span class="c"># 查看状态</span>
+systemctl status frps
+</code></pre></div></div> <h3 id="6-验证服务">6. 验证服务</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看日志</span>
+<span class="nb">tail</span> <span class="nt">-f</span> /var/log/frps.log
+
+<span class="c"># 检查端口监听</span>
+netstat <span class="nt">-tlnp</span> | <span class="nb">grep </span>7000
+</code></pre></div></div> <h2 id="四客户端配置本地机器">四、客户端配置（本地机器）</h2> <h3 id="1-下载frp">1. 下载FRP</h3> <p>根据你的操作系统下载对应版本：</p> <table> <thead> <tr> <th>操作系统</th> <th>下载文件</th> </tr> </thead> <tbody> <tr> <td>Windows</td> <td><code class="language-plaintext highlighter-rouge">frp_0.68.0_windows_amd64.zip</code></td> </tr> <tr> <td>macOS</td> <td><code class="language-plaintext highlighter-rouge">frp_0.68.0_darwin_amd64.tar.gz</code></td> </tr> <tr> <td>Linux</td> <td><code class="language-plaintext highlighter-rouge">frp_0.68.0_linux_amd64.tar.gz</code></td> </tr> </tbody> </table> <h3 id="2-配置客户端frpc">2. 配置客户端（frpc）</h3> <p>创建配置文件 <code class="language-plaintext highlighter-rouge">frpc.toml</code>：</p> <div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># frpc.toml</span>
+<span class="n">serverAddr</span> <span class="o">=</span><span class="w"> </span><span class="s">"你的阿里云公网IP"</span>
+<span class="n">serverPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">7000</span>
+<span class="n">auth</span><span class="p">.</span><span class="n">method</span> <span class="o">=</span><span class="w"> </span><span class="s">"token"</span>
+<span class="n">auth</span><span class="p">.</span><span class="n">token</span> <span class="o">=</span><span class="w"> </span><span class="s">"your_strong_password_here"</span>  <span class="c"># 必须与服务器端一致</span>
+
+<span class="c"># 示例1：映射本地Web服务（HTTP）</span>
+<span class="k">[[</span><span class="n">proxies</span><span class="k">]]</span>
+<span class="n">name</span> <span class="o">=</span><span class="w"> </span><span class="s">"web"</span>
+<span class="n">type</span> <span class="o">=</span><span class="w"> </span><span class="s">"tcp"</span>
+<span class="n">localIP</span> <span class="o">=</span><span class="w"> </span><span class="s">"127.0.0.1"</span>
+<span class="n">localPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">80</span>
+<span class="n">remotePort</span> <span class="o">=</span><span class="w"> </span><span class="mi">8080</span>
+
+<span class="c"># 示例2：映射SSH服务</span>
+<span class="k">[[</span><span class="n">proxies</span><span class="k">]]</span>
+<span class="n">name</span> <span class="o">=</span><span class="w"> </span><span class="s">"ssh"</span>
+<span class="n">type</span> <span class="o">=</span><span class="w"> </span><span class="s">"tcp"</span>
+<span class="n">localIP</span> <span class="o">=</span><span class="w"> </span><span class="s">"127.0.0.1"</span>
+<span class="n">localPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">22</span>
+<span class="n">remotePort</span> <span class="o">=</span><span class="w"> </span><span class="mi">6000</span>
+
+<span class="c"># 示例3：映射远程桌面（RDP）</span>
+<span class="k">[[</span><span class="n">proxies</span><span class="k">]]</span>
+<span class="n">name</span> <span class="o">=</span><span class="w"> </span><span class="s">"rdp"</span>
+<span class="n">type</span> <span class="o">=</span><span class="w"> </span><span class="s">"tcp"</span>
+<span class="n">localIP</span> <span class="o">=</span><span class="w"> </span><span class="s">"127.0.0.1"</span>
+<span class="n">localPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">3389</span>
+<span class="n">remotePort</span> <span class="o">=</span><span class="w"> </span><span class="mi">3389</span>
+</code></pre></div></div> <h3 id="3-启动客户端">3. 启动客户端</h3> <p><strong>Windows</strong>：</p> <pre><code class="language-cmd">frpc.exe -c frpc.toml
+</code></pre> <p><strong>Linux/macOS</strong>：</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./frpc <span class="nt">-c</span> frpc.toml
+</code></pre></div></div> <h2 id="五测试连接">五、测试连接</h2> <h3 id="1-测试web服务映射">1. 测试Web服务映射</h3> <p>假设你本地运行了一个Web服务器在80端口：</p> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 通过阿里云公网IP和映射端口访问</span>
+curl http://你的阿里云公网IP:8080
+</code></pre></div></div> <h3 id="2-测试ssh连接">2. 测试SSH连接</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 通过映射的SSH端口连接本地机器</span>
+ssh <span class="nt">-p</span> 6000 你的用户名@你的阿里云公网IP
+</code></pre></div></div> <h3 id="3-测试远程桌面">3. 测试远程桌面</h3> <ul> <li>Windows远程桌面连接：<code class="language-plaintext highlighter-rouge">你的阿里云公网IP:3389</code> </li> <li>或使用其他RDP客户端</li> </ul> <h2 id="六高级配置">六、高级配置</h2> <h3 id="1-域名访问可选">1. 域名访问（可选）</h3> <p>如果你有域名，可以配置域名解析：</p> <div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在frpc.toml中添加HTTP代理</span>
+<span class="k">[[</span><span class="n">proxies</span><span class="k">]]</span>
+<span class="n">name</span> <span class="o">=</span><span class="w"> </span><span class="s">"web-http"</span>
+<span class="n">type</span> <span class="o">=</span><span class="w"> </span><span class="s">"http"</span>
+<span class="n">localIP</span> <span class="o">=</span><span class="w"> </span><span class="s">"127.0.0.1"</span>
+<span class="n">localPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">80</span>
+<span class="n">customDomains</span> <span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s">"yourdomain.com"</span><span class="p">]</span>
+</code></pre></div></div> <h3 id="2-配置多个服务">2. 配置多个服务</h3> <div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 映射多个服务</span>
+<span class="k">[[</span><span class="n">proxies</span><span class="k">]]</span>
+<span class="n">name</span> <span class="o">=</span><span class="w"> </span><span class="s">"web1"</span>
+<span class="n">type</span> <span class="o">=</span><span class="w"> </span><span class="s">"tcp"</span>
+<span class="n">localIP</span> <span class="o">=</span><span class="w"> </span><span class="s">"127.0.0.1"</span>
+<span class="n">localPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">80</span>
+<span class="n">remotePort</span> <span class="o">=</span><span class="w"> </span><span class="mi">8080</span>
+
+<span class="k">[[</span><span class="n">proxies</span><span class="k">]]</span>
+<span class="n">name</span> <span class="o">=</span><span class="w"> </span><span class="s">"web2"</span>
+<span class="n">type</span> <span class="o">=</span><span class="w"> </span><span class="s">"tcp"</span>
+<span class="n">localIP</span> <span class="o">=</span><span class="w"> </span><span class="s">"192.168.1.100"</span>
+<span class="n">localPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">8080</span>
+<span class="n">remotePort</span> <span class="o">=</span><span class="w"> </span><span class="mi">8081</span>
+
+<span class="k">[[</span><span class="n">proxies</span><span class="k">]]</span>
+<span class="n">name</span> <span class="o">=</span><span class="w"> </span><span class="s">"database"</span>
+<span class="n">type</span> <span class="o">=</span><span class="w"> </span><span class="s">"tcp"</span>
+<span class="n">localIP</span> <span class="o">=</span><span class="w"> </span><span class="s">"127.0.0.1"</span>
+<span class="n">localPort</span> <span class="o">=</span><span class="w"> </span><span class="mi">3306</span>
+<span class="n">remotePort</span> <span class="o">=</span><span class="w"> </span><span class="mi">3306</span>
+</code></pre></div></div> <h3 id="3-安全加固">3. 安全加固</h3> <div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 在frps.toml中添加安全配置</span>
+<span class="n">transport</span><span class="p">.</span><span class="n">maxPoolCount</span> <span class="o">=</span><span class="w"> </span><span class="mi">10</span>
+<span class="n">transport</span><span class="p">.</span><span class="n">tcpMux</span> <span class="o">=</span><span class="w"> </span><span class="kc">true</span>
+<span class="n">allowPorts</span> <span class="o">=</span><span class="w"> </span><span class="p">[</span>
+  <span class="p">{</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">8000</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">9000</span><span class="w"> </span><span class="p">},</span>
+  <span class="p">{</span><span class="w"> </span><span class="n">start</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">6000</span><span class="p">,</span><span class="w"> </span><span class="n">end</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">6000</span><span class="w"> </span><span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div></div> <h2 id="七常见问题解决">七、常见问题解决</h2> <h3 id="1-连接失败">1. 连接失败</h3> <ul> <li> <strong>检查安全组</strong>：确保阿里云安全组已开放相应端口</li> <li> <strong>检查防火墙</strong>：服务器和本地机器的防火墙设置</li> <li> <strong>检查配置</strong>：确认服务器地址、端口、密码配置正确</li> <li> <strong>检查网络</strong>：确认本地机器可以访问互联网</li> </ul> <h3 id="2-端口被占用">2. 端口被占用</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Linux检查端口占用</span>
+netstat <span class="nt">-tlnp</span> | <span class="nb">grep </span>端口号
+<span class="c"># 或</span>
+lsof <span class="nt">-i</span>:端口号
+
+<span class="c"># Windows检查端口占用</span>
+netstat <span class="nt">-ano</span> | findstr 端口号
+</code></pre></div></div> <h3 id="3-服务无法启动">3. 服务无法启动</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看详细日志</span>
+journalctl <span class="nt">-u</span> frps.service <span class="nt">-f</span>
+
+<span class="c"># 检查配置文件语法</span>
+./frps <span class="nt">-c</span> frps.toml
+</code></pre></div></div> <h3 id="4-性能优化">4. 性能优化</h3> <ul> <li>调整 <code class="language-plaintext highlighter-rouge">transport.maxPoolCount</code>（最大连接池）</li> <li>启用 <code class="language-plaintext highlighter-rouge">transport.tcpMux</code>（TCP多路复用）</li> <li>调整 <code class="language-plaintext highlighter-rouge">transport.poolCount</code>（连接池大小）</li> </ul> <h2 id="八安全注意事项">八、安全注意事项</h2> <ol> <li> <strong>使用强密码</strong>：为FRP认证设置强密码，定期更换</li> <li> <strong>限制访问IP</strong>：在安全组中限制访问IP范围</li> <li> <strong>最小权限原则</strong>：只开放必要的端口</li> <li> <strong>定期更新</strong>：及时更新FRP到最新版本</li> <li> <strong>监控日志</strong>：定期检查访问日志，发现异常</li> <li> <strong>使用HTTPS</strong>：对于Web服务，建议使用HTTPS加密</li> </ol> <h2 id="九维护管理">九、维护管理</h2> <h3 id="1-更新frp">1. 更新FRP</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 停止服务</span>
+systemctl stop frps
+
+<span class="c"># 备份配置</span>
+<span class="nb">cp</span> /opt/frp/frp_0.68.0_linux_amd64/frps.toml /opt/frp/frps.toml.backup
+
+<span class="c"># 下载新版本</span>
+<span class="c"># ... 重复下载步骤</span>
+
+<span class="c"># 恢复配置</span>
+<span class="nb">cp</span> /opt/frp/frps.toml.backup /opt/frp/new_version/frps.toml
+
+<span class="c"># 启动服务</span>
+systemctl start frps
+</code></pre></div></div> <h3 id="2-日志管理">2. 日志管理</h3> <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 配置日志轮转</span>
+<span class="nb">cat</span> <span class="o">&gt;</span> /etc/logrotate.d/frps <span class="o">&lt;&lt;</span> <span class="no">EOF</span><span class="sh">
+/var/log/frps.log {
+    daily
+    missingok
+    rotate 7
+    compress
+    delaycompress
+    notifempty
+    create 0640 nobody nobody
+}
+</span><span class="no">EOF
+</span></code></pre></div></div> <h2 id="十参考资源">十、参考资源</h2> <ul> <li><a href="https://gofrp.org/zh-cn/docs/" rel="external nofollow noopener" target="_blank">FRP官方文档</a></li> <li><a href="https://github.com/fatedier/frp" rel="external nofollow noopener" target="_blank">FRP GitHub仓库</a></li> <li><a href="https://help.aliyun.com/product/25365.html" rel="external nofollow noopener" target="_blank">阿里云ECS文档</a></li> <li><a href="https://help.aliyun.com/document_detail/25387.html" rel="external nofollow noopener" target="_blank">阿里云安全组配置</a></li> </ul> </div> </article> <br> <hr> <br> <ul class="list-disc pl-8"></ul> <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2> <p class="mb-2">Here are some more articles you might like to read next:</p> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2026/probability-chapter4-numerical-characteristics/">概率论与数理统计 第4章 随机变量的数字特征</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2025/plotly/">a post with plotly.js</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/photo-gallery/">a post with image galleries</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/tabs/">a post with tabs</a> </li> <li class="my-2"> <a class="text-pink-700 underline font-semibold hover:text-pink-800" href="/blog/2024/typograms/">a post with typograms</a> </li> </div> </div> <footer class="fixed-bottom" role="contentinfo"> <div class="container mt-0"> © Copyright 2026 Z Y H. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. </div> </footer> <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script> <script src="/assets/js/bootstrap.bundle.min.js"></script> <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script> <script defer src="/assets/js/masonry.js?v=a0db7e5d5c70cc3252b3138b0c91dcaf" type="text/javascript"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script> <script defer src="/assets/js/zoom.js?v=85ddb88934d28b74e78031fd54cf8308"></script> <script src="/assets/js/no_defer.js?v=2781658a0a2b13ed609542042a859126"></script> <script defer src="/assets/js/common.js?v=c15de51d4bb57887caa2c21988d97279"></script> <script defer src="/assets/js/copy_code.js?v=c8a01c11a92744d44b093fc3bda915df" type="text/javascript"></script> <script defer src="/assets/js/jupyter_new_tab.js?v=d9f17b6adc2311cbabd747f4538bb15f"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script> <script src="/assets/js/mathjax-setup.js?v=a5bb4e6a542c546dd929b24b8b236dfd"></script> <script defer src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6" crossorigin="anonymous"></script> <script defer src="/assets/js/progress-bar.js?v=2f30e0e6801ea8f5036fa66e1ab0a71a" type="text/javascript"></script> <script src="/assets/js/vanilla-back-to-top.min.js?v=f40d453793ff4f64e238e420181a1d17"></script> <script>
+    addBackToTop();
+  </script> <script type="module" src="/assets/js/search/ninja-keys.min.js?v=a3446f084dcaecc5f75aa1757d087dcf"></script> <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys> <script src="/assets/js/search-setup.js?v=6c304f7b1992d4b60f7a07956e52f04a"></script> <script src="/assets/js/search-data.js"></script> <script src="/assets/js/shortcut-key.js?v=ccc841c459bfc0e64c1c2b5acd10df02"></script> </body> </html>
