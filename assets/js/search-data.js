@@ -94,6 +94,17 @@ ninja.data = [{
             window.location.href = "/blog/2026/probability-chapter4-numerical-characteristics/";
           
         },
+      },{id: "post-第9章-半群与群",
+        
+          title: "第9章 半群与群",
+        
+        description: "半群与群的基本概念，包括二元运算、半群、群、陪集、正规子群、环与域等内容",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/group-and-semigroup/";
+          
+        },
       },{id: "post-a-post-with-plotly-js",
         
           title: "a post with plotly.js",
